@@ -11,10 +11,10 @@ export class EnergydataService {
 
   getLastSunday(date) {
     date.setDate(date.getDate() - date.getDay());
-    return date.setHours(23,0,0,0);
+    return date.setHours(24,0,0,0);
   }
   
-  timestamp = this.getLastSunday(new Date());
+  // timestamp = this.getLastSunday(new Date());
 
   powerGeneratorCategories = {
     bio: 103, 
@@ -39,14 +39,14 @@ export class EnergydataService {
     others: 715
   };
 
-  apiUrl = 'https://www.smard.de/app/chart_data/' +this.powerGeneratorCategories.pv +'/DE/' +this.powerGeneratorCategories.pv +'_DE_hour_1522015200000.json';
-
+  
   constructor(public http: HttpClient) { }
-
+  
   getAllData() {
-    return $.getJSON('http://allorigins.me/get?url='+encodeURI(this.apiUrl)+'&callback=?');
+    let energyKind = this.powerGeneratorCategories.pv;
+    let timestamp = this.getLastSunday(new Date());
+    console.log(timestamp);
+    let apiUrl = 'https://www.smard.de/app/chart_data/' + energyKind + '/DE/' + energyKind + '_DE_quarterhour_'+ timestamp +'.json';
+    return $.getJSON('http://allorigins.me/get?url='+encodeURI(apiUrl)+'&callback=?');
   }
-
-
-
 }

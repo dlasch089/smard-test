@@ -18,6 +18,12 @@ export class DataviewComponent implements OnInit {
         console.log(data);
         this.energyData = JSON.parse(data.contents).series;
         this.energyService.energyData = JSON.parse(data.contents).series;
-      });
+      })
+        // .then(res  => {
+        //   let index = res.findIndex((element) => {
+        //     return element.includes(null);
+        //   });
+        //   return res[index-1];
+        // })
   }
 }
