@@ -1,5 +1,20 @@
-<p>
-  dataview works!
-</p>
-<pre >{{ energyData | json}} </pre>
+<h1>Current Energy Production Germany</h1>
+<h2 *ngIf="prognosisEnergy.length > 0">Prognosis At Time: {{prognosisEnergy[0][1][0] | date:'dd.MM.yyyy HH:mm':'+0200'}}</h2>
+<div class="prognosis" *ngIf="prognosisEnergy">
+  <p *ngFor="let energyItem of prognosisEnergy">
+    {{energyItem[0]}}: {{energyItem[1][1]}} in MWh
+  </p>
+</div>
+<h2 *ngIf="currentEnergy.length > 0">Current At Time: {{currentEnergy[0][1][0] | date:'dd.MM.yyyy HH:mm':'+0200'}}</h2>
+<div class="current" *ngIf="currentEnergy">
+    <p *ngFor="let energyItem of currentEnergy">
+      {{energyItem[0]}}: {{energyItem[1][1]}} in MWh
+    </p>
+  </div>
+
+
+
+<!-- <pre *ngIf="prognosisEnergy">Prognosis: {{ prognosisEnergy | json}} </pre>
+<pre *ngIf="currentEnergy">Current: {{ currentEnergy | json}} </pre> -->
+
 
