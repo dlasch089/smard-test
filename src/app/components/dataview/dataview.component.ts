@@ -14,6 +14,8 @@ export class DataviewComponent implements OnInit {
   currentEnergy: Array<any> = [];
   prognosisEnergy: Array<any> = [];
 
+  currentRenewableShare: Number;
+
   now:Number;
 
   getLastSunday(date) {
@@ -45,10 +47,10 @@ export class DataviewComponent implements OnInit {
 
   powerPrognosis = {
     all: 122,
+    others: 715,
     windOffshore: 3791,
     windOnshore: 123,
     pv: 125,
-    others: 715
   };
 
   constructor(public energyService: EnergydataService) { }
@@ -56,7 +58,8 @@ export class DataviewComponent implements OnInit {
   ngOnInit() {
     this.now = new Date().getTime();
     this.getCurrentProduction(this.powerGeneratorCategories, this.currentEnergy);
-    this.getPrognosis(this.powerPrognosis, this.prognosisEnergy);
+    this.getPrognosis(this.powerPrognosis, this.prognosisEnergy)
+      .then(array => this.getRenewableShare(array));
   }
 
   async getCurrentProduction(object, array){
@@ -77,12 +80,11 @@ export class DataviewComponent implements OnInit {
       await this.energyService.getAllData(this.getLastSunday(new Date()), object[key])
       .then(data => {    
         this.rawPrognosis = JSON.parse(data.contents).series;
-        // console.log(this.rawPrognosis); 
-        const index = this.rawPrognosis.find(this.findNow, new Date().getTime());
+        const index = this.rawPrognosis.find(this.findNow);
         return array.push([key, index]);
-      })
+      });
     }
-    this.getRenewableShare(array);
+    return array;
   }
 
   findNow(element) {
@@ -92,13 +94,9 @@ export class DataviewComponent implements OnInit {
   }
 
   getRenewableShare(array) {
-    console.log(array);
-    let  allOthersScore = 0;
-    array.forEach(element => allOthersScore += element[1][1]);
-    let allScore = array.find((element) => element.includes('all'))[1][1];
-    array.pop(allScore);
-    console.log(allOthersScore, allScore)
-    allOthersScore = allOthersScore - allScore;
-    let share = allOthersScore/allScore;
+    let renewables: number = 0;
+    array.forEach((element, index) => index > 1 ? renewables += element[1][1] : renewables);
+    let renewableShare = renewables / array.find(element => element.includes('all'))[1][1];
+    return this.currentRenewableShare = Math.floor(renewableShare*100);
   }
 }

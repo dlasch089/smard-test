@@ -5,7 +5,8 @@
     {{energyItem[0]}}: {{energyItem[1][1]}} in MWh
   </p>
 </div>
-<h2 *ngIf="currentEnergy.length > 0">Current At Time: {{currentEnergy[0][1][0] | date:'dd.MM.yyyy HH:mm':'+0200'}}</h2>
+<h2 *ngIf="currentRenewableShare">Current Renewable Share: {{currentRenewableShare}}%</h2>
+<h2 *ngIf="currentEnergy.length > 0">Real Production At Time: {{currentEnergy[0][1][0] | date:'dd.MM.yyyy HH:mm':'+0200'}}</h2>
 <div class="current" *ngIf="currentEnergy">
     <p *ngFor="let energyItem of currentEnergy">
       {{energyItem[0]}}: {{energyItem[1][1]}} in MWh
