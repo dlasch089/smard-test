@@ -9,13 +9,21 @@ import { EnergydataService } from '../../services/energydata.service';
 export class DataviewComponent implements OnInit {
 
   rawData: Array<any>;
+  rawPrognosis: Array<any>;
 
   currentEnergy: Array<any> = [];
   prognosisEnergy: Array<any> = [];
 
+  now:Number;
+
   getLastSunday(date) {
-    date.setDate(date.getDate() - date.getDay());
-    return date.setHours(24,0,0,0);
+    if(date.getDay() != 0){
+      date.setDate(date.getDate() - date.getDay());
+      return date.setHours(24,0,0,0);
+    } else{
+      date.setDate(date.getDate() - 7)
+      return date.setHours(24,0,0,0);
+    }
   }
   
   // timestamp = this.getLastSunday(new Date());
@@ -46,19 +54,51 @@ export class DataviewComponent implements OnInit {
   constructor(public energyService: EnergydataService) { }
 
   ngOnInit() {
+    this.now = new Date().getTime();
     this.getCurrentProduction(this.powerGeneratorCategories, this.currentEnergy);
-    this.getCurrentProduction(this.powerPrognosis, this.prognosisEnergy);
+    this.getPrognosis(this.powerPrognosis, this.prognosisEnergy);
   }
 
   async getCurrentProduction(object, array){
     for(var key in object){
       await this.energyService.getAllData(this.getLastSunday(new Date()), object[key])
       .then(data => {
+        // console.log(data);
         this.rawData = JSON.parse(data.contents).series;
         let index = this.rawData.length;
         while (index-- && !this.rawData[index][1]);
         return array.push([key, this.rawData[index]]);
       })
     }
+  }
+
+  async getPrognosis(object, array) {
+    for(var key in object) {
+      await this.energyService.getAllData(this.getLastSunday(new Date()), object[key])
+      .then(data => {    
+        this.rawPrognosis = JSON.parse(data.contents).series;
+        // console.log(this.rawPrognosis); 
+        const index = this.rawPrognosis.find(this.findNow, new Date().getTime());
+        return array.push([key, index]);
+      })
+    }
+    this.getRenewableShare(array);
+  }
+
+  findNow(element) {
+    const time = new Date().getTime();
+    // console.log(time);
+    return element[0] > time;
+  }
+
+  getRenewableShare(array) {
+    console.log(array);
+    let  allOthersScore = 0;
+    array.forEach(element => allOthersScore += element[1][1]);
+    let allScore = array.find((element) => element.includes('all'))[1][1];
+    array.pop(allScore);
+    console.log(allOthersScore, allScore)
+    allOthersScore = allOthersScore - allScore;
+    let share = allOthersScore/allScore;
   }
 }
