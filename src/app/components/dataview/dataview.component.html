@@ -1,11 +1,18 @@
 <h1>Current Energy Production Germany</h1>
-<h2 *ngIf="prognosisEnergy.length > 0">Prognosis At Time: {{prognosisEnergy[0][1][0] | date:'dd.MM.yyyy HH:mm':'+0200'}}</h2>
-<div class="prognosis" *ngIf="prognosisEnergy">
-  <p *ngFor="let energyItem of prognosisEnergy">
+<h2 *ngIf="prognosisEnergyNow.length > 0">Prognosis At Time: {{prognosisEnergyNow[0][1][0] | date:'dd.MM.yyyy HH:mm':'+0200'}}</h2>
+<div class="prognosis" *ngIf="prognosisEnergyNow">
+  <p *ngFor="let energyItem of prognosisEnergyNow">
     {{energyItem[0]}}: {{energyItem[1][1]}} in MWh
   </p>
 </div>
 <h2 *ngIf="currentRenewableShare">Current Renewable Share: {{currentRenewableShare}}%</h2>
+<h2 *ngIf="prognosisEnergyOneHour.length > 0">Prognosis At Time: {{prognosisEnergyOneHour[0][1][0] | date:'dd.MM.yyyy HH:mm':'+0200'}}</h2>
+<div class="prognosis" *ngIf="prognosisEnergyOneHour">
+  <p *ngFor="let energyItem of prognosisEnergyOneHour">
+    {{energyItem[0]}}: {{energyItem[1][1]}} in MWh
+  </p>
+</div>
+<h2 *ngIf="futureRenewableShare">Future Renewable Share in One Hour: {{futureRenewableShare}}%</h2>
 <h2 *ngIf="currentEnergy.length > 0">Real Production At Time: {{currentEnergy[0][1][0] | date:'dd.MM.yyyy HH:mm':'+0200'}}</h2>
 <div class="current" *ngIf="currentEnergy">
     <p *ngFor="let energyItem of currentEnergy">

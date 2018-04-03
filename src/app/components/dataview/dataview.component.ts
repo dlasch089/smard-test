@@ -12,9 +12,12 @@ export class DataviewComponent implements OnInit {
   rawPrognosis: Array<any>;
 
   currentEnergy: Array<any> = [];
-  prognosisEnergy: Array<any> = [];
+  prognosisEnergyNow: Array<any> = [];
+
+  prognosisEnergyOneHour: Array<any> = [];
 
   currentRenewableShare: Number;
+  futureRenewableShare: Number;
 
   now:Number;
 
@@ -58,8 +61,12 @@ export class DataviewComponent implements OnInit {
   ngOnInit() {
     this.now = new Date().getTime();
     this.getCurrentProduction(this.powerGeneratorCategories, this.currentEnergy);
-    this.getPrognosis(this.powerPrognosis, this.prognosisEnergy)
-      .then(array => this.getRenewableShare(array));
+    this.getPrognosis(this.powerPrognosis, this.prognosisEnergyNow, this.findNow)
+      .then(array => this.getRenewableShare(array))
+      .then(share => this.currentRenewableShare = share);
+    this.getPrognosis(this.powerPrognosis, this.prognosisEnergyOneHour, this.findInOneHour)
+      .then(array => this.getRenewableShare(array))
+      .then(share => this.futureRenewableShare = share);
   }
 
   async getCurrentProduction(object, array){
@@ -75,17 +82,30 @@ export class DataviewComponent implements OnInit {
     }
   }
 
-  async getPrognosis(object, array) {
+  async getPrognosis(object, array, findFunction) {
     for(var key in object) {
       await this.energyService.getAllData(this.getLastSunday(new Date()), object[key])
       .then(data => {    
         this.rawPrognosis = JSON.parse(data.contents).series;
-        const index = this.rawPrognosis.find(this.findNow);
+        const now = new Date().getTime();
+        const index = this.rawPrognosis.find(findFunction);
         return array.push([key, index]);
       });
     }
     return array;
   }
+  // async getFuturePrognosis(object, array) {
+  //   for(var key in object) {
+  //     await this.energyService.getAllData(this.getLastSunday(new Date()), object[key])
+  //     .then(data => {    
+  //       this.rawPrognosis = JSON.parse(data.contents).series;
+  //       const now = new Date().getTime();
+  //       const index = this.rawPrognosis.find(this.findInOneHour);
+  //       return array.push([key, index]);
+  //     });
+  //   }
+  //   return array;
+  // }
 
   findNow(element) {
     const time = new Date().getTime();
@@ -93,10 +113,17 @@ export class DataviewComponent implements OnInit {
     return element[0] > time;
   }
 
+  findInOneHour(element) {
+    const time = new Date().getTime() + 3600000;
+    // console.log(time);
+    return element[0] > time;
+  }
+
   getRenewableShare(array) {
+    let share: Number;
     let renewables: number = 0;
     array.forEach((element, index) => index > 1 ? renewables += element[1][1] : renewables);
     let renewableShare = renewables / array.find(element => element.includes('all'))[1][1];
-    return this.currentRenewableShare = Math.floor(renewableShare*100);
+    return share = Math.floor(renewableShare*100);
   }
 }
