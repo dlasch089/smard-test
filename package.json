@@ -22,7 +22,9 @@
     "@angular/platform-browser-dynamic": "^5.2.10",
     "@angular/router": "^5.2.10",
     "core-js": "^2.5.5",
+    "hoek": "^5.0.3",
     "jquery": "^3.3.1",
+    "npm-check-updates": "^2.14.2",
     "rxjs": "^5.5.10",
     "zone.js": "^0.8.26"
   },
