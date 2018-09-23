@@ -16,3 +16,5 @@ export class EnergydataService {
     return $.getJSON('http://allorigins.me/get?url='+encodeURI(apiUrl)+'&callback=?');
   }
 }
+
+

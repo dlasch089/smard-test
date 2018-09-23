@@ -15,9 +15,11 @@ export class DataviewComponent implements OnInit {
   prognosisEnergyNow: Array<any> = [];
 
   prognosisEnergyOneHour: Array<any> = [];
+  prognosisEnergyTwoHour: Array<any> = [];
 
   currentRenewableShare: Number;
   futureRenewableShare: Number;
+  futureTwoRenewableShare: Number;
 
   now:Number;
 
@@ -60,13 +62,27 @@ export class DataviewComponent implements OnInit {
 
   ngOnInit() {
     this.now = new Date().getTime();
+    // Gets the last available Production data and saves it in an array
     this.getCurrentProduction(this.powerGeneratorCategories, this.currentEnergy);
+
+    // gets the data for the full week and calculates the renewable share for the current quarterly hour:
     this.getPrognosis(this.powerPrognosis, this.prognosisEnergyNow, this.findNow)
       .then(array => this.getRenewableShare(array))
       .then(share => this.currentRenewableShare = share);
+
+    // gets the data for the full week and calculates the renewable share for the quarterly hour one hour after now:
     this.getPrognosis(this.powerPrognosis, this.prognosisEnergyOneHour, this.findInOneHour)
       .then(array => this.getRenewableShare(array))
       .then(share => this.futureRenewableShare = share);
+
+    this.getPrognosis(this.powerPrognosis, this.prognosisEnergyTwoHour, this.findInTwoHour)
+      .then(array => this.getRenewableShare(array))
+      .then(share => this.futureTwoRenewableShare = share);
+
+      // trying to make an array or object for the hours to only use the function once:
+    // this.getPrognosis(this.powerPrognosis, this.hoursKey, this.finInHour+time)
+    //   .then(array => this.getRenewableShare(array))
+    //   .then(share => this.futureTwoRenewableShare = share);
   }
 
   async getCurrentProduction(object, array){
@@ -94,6 +110,7 @@ export class DataviewComponent implements OnInit {
     }
     return array;
   }
+
   // async getFuturePrognosis(object, array) {
   //   for(var key in object) {
   //     await this.energyService.getAllData(this.getLastSunday(new Date()), object[key])
@@ -115,6 +132,12 @@ export class DataviewComponent implements OnInit {
 
   findInOneHour(element) {
     const time = new Date().getTime() + 3600000;
+    // console.log(time);
+    return element[0] > time;
+  }
+
+  findInTwoHour(element) {
+    const time = new Date().getTime() + 7200000;
     // console.log(time);
     return element[0] > time;
   }
