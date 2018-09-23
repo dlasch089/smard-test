@@ -21,7 +21,13 @@ export class DataviewComponent implements OnInit {
   futureRenewableShare: Number;
   futureTwoRenewableShare: Number;
 
-  now:Number;
+  now:Number = 0;
+
+  prognosisHours:Object = {
+    zero: [],
+    one: [],
+    two: []
+  }
 
   getLastSunday(date) {
     if(date.getDay() != 0){
@@ -62,6 +68,7 @@ export class DataviewComponent implements OnInit {
 
   ngOnInit() {
     this.now = new Date().getTime();
+
     // Gets the last available Production data and saves it in an array
     this.getCurrentProduction(this.powerGeneratorCategories, this.currentEnergy);
 
@@ -80,9 +87,11 @@ export class DataviewComponent implements OnInit {
       .then(share => this.futureTwoRenewableShare = share);
 
       // trying to make an array or object for the hours to only use the function once:
-    // this.getPrognosis(this.powerPrognosis, this.hoursKey, this.finInHour+time)
-    //   .then(array => this.getRenewableShare(array))
-    //   .then(share => this.futureTwoRenewableShare = share);
+      // for (var key in this.prognosisHours){
+      //   this.getPrognosis(this.powerPrognosis, key, this.findNow)
+      //   .then(array => this.getRenewableShare(array))
+      //   .then(share => this.futureTwoRenewableShare = share);
+      // }
   }
 
   async getCurrentProduction(object, array){
@@ -103,7 +112,6 @@ export class DataviewComponent implements OnInit {
       await this.energyService.getAllData(this.getLastSunday(new Date()), object[key])
       .then(data => {    
         this.rawPrognosis = JSON.parse(data.contents).series;
-        const now = new Date().getTime();
         const index = this.rawPrognosis.find(findFunction);
         return array.push([key, index]);
       });
@@ -111,34 +119,31 @@ export class DataviewComponent implements OnInit {
     return array;
   }
 
-  // async getFuturePrognosis(object, array) {
+  // async getPrognosisObjectTest(object, finalObject, findFunction) {
   //   for(var key in object) {
   //     await this.energyService.getAllData(this.getLastSunday(new Date()), object[key])
   //     .then(data => {    
   //       this.rawPrognosis = JSON.parse(data.contents).series;
   //       const now = new Date().getTime();
-  //       const index = this.rawPrognosis.find(this.findInOneHour);
-  //       return array.push([key, index]);
+  //       const index = this.rawPrognosis.find(findFunction);
+  //       return finalObject[key] = index[1];
   //     });
   //   }
-  //   return array;
+  //   return finalObject;
   // }
 
   findNow(element) {
     const time = new Date().getTime();
-    // console.log(time);
     return element[0] > time;
   }
 
   findInOneHour(element) {
     const time = new Date().getTime() + 3600000;
-    // console.log(time);
     return element[0] > time;
   }
 
   findInTwoHour(element) {
     const time = new Date().getTime() + 7200000;
-    // console.log(time);
     return element[0] > time;
   }
 
