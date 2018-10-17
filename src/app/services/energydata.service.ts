@@ -13,7 +13,7 @@ export class EnergydataService {
   
   getAllData(timestamp, energyKind) {
     let apiUrl = 'https://www.smard.de/app/chart_data/' + energyKind + '/DE/' + energyKind + '_DE_quarterhour_'+ timestamp +'.json';
-    return $.getJSON('http://allorigins.me/get?url='+encodeURI(apiUrl)+'&callback=?');
+    return $.getJSON('https://allorigins.me/get?url='+encodeURI(apiUrl)+'&callback=?');
   }
 }
 
